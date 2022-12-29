@@ -72,7 +72,7 @@ async function run() {
                   phone: user.phone
                 }
             }
-            const result = await postsCollection.updateOne(filter, updatedUser, option);
+            const result = await aboutCollection.updateOne(filter, updatedUser, option);
             res.send(result);
          })
 
