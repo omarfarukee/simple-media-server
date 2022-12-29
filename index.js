@@ -9,7 +9,7 @@ const app = express()
 app.use(cors())
 app.use(express.json()) 
 
-
+// test
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.xdpsuxi.mongodb.net/?retryWrites=true&w=majority`;
@@ -20,6 +20,7 @@ console.log(uri)
 async function run() {
     try {
         const postsCollection = client.db('simpleMedia').collection('posts')
+        const aboutCollection = client.db('simpleMedia').collection('about')
 
         app.get('/posts', async (req, res) => {
             const query = {}
@@ -56,6 +57,50 @@ async function run() {
             const result = await postsCollection.updateOne(filter, updatedUser, option);
             res.send(result);
          })
+
+
+         app.put('/about/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const user = req.body;
+            console.log(user)
+            const option = {upsert: true};
+            const updatedUser = {
+                $set: {
+                  university: user.university,
+                  address: user.address,
+                  phone: user.phone
+                }
+            }
+            const result = await postsCollection.updateOne(filter, updatedUser, option);
+            res.send(result);
+         })
+
+         app.get('/about/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            console.log(query)
+            const result = await aboutCollection.find(query).toArray();
+            res.send(result);
+
+        })
+        app.get('/about', async(req , res) =>{
+            let query = {};
+            if(req.query.email){
+                query ={
+                    email : req.query.email
+                }
+            }
+            const cursor = aboutCollection.find(query);
+            const abouts = await cursor.toArray();
+            res.send(abouts)
+        })
+         app.post('/about', async (req, res) => {
+            const info = req.body
+            console.log(info)
+            const result = await aboutCollection.insertOne(info)
+            res.send(result)
+        })
     }
     finally {
 
