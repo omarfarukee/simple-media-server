@@ -21,6 +21,7 @@ async function run() {
     try {
         const postsCollection = client.db('simpleMedia').collection('posts')
         const aboutCollection = client.db('simpleMedia').collection('about')
+        const commentsCollection = client.db('simpleMedia').collection('comments')
 
         app.get('/posts', async (req, res) => {
             const query = {}
@@ -39,7 +40,7 @@ async function run() {
         
         app.post('/posts', async (req, res) => {
             const item = req.body
-            console.log(item)
+            // console.log(item)
             const result = await postsCollection.insertOne(item)
             res.send(result)
         })
@@ -100,6 +101,22 @@ async function run() {
             console.log(info)
             const result = await aboutCollection.insertOne(info)
             res.send(result)
+        })
+
+         app.post('/comments', async (req, res) => {
+            const item = req.body
+            // console.log(item)
+            const result = await commentsCollection.insertOne(item)
+            res.send(result)
+        })
+
+        app.get('/comments/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { categoryId: id };
+            console.log(query)
+            const result = await commentsCollection.find(query).toArray();
+            res.send(result);
+            
         })
     }
     finally {
